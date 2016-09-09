@@ -1,4 +1,6 @@
 corral
+!wrangle/corral/fetched/*
+*.zip
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
