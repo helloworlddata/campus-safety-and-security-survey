@@ -5,6 +5,7 @@ CORRAL_DIR = WRANGLE_DIR / 'corral'
 SCRIPTS = WRANGLE_DIR / 'scripts'
 DIRS = {
     'fetched' => CORRAL_DIR / 'fetched',
+    'tidied' => CORRAL_DIR / 'tidied',
     'published' => DATA_DIR,
 }
 
@@ -16,13 +17,15 @@ AREAS = {
   'residence_hall' => 'residencehall',
 }
 
-CATEGORIES = {
+TOPICS = {
   'arrests' => 'arrest',
   'crimes' => 'crime',
   'disciplinary_actions' => 'discipline',
   'hate_crimes' => 'hate',
 }
 
+MIN_YEAR = 2008
+MAX_YEAR = 2015
 
 
 
@@ -37,16 +40,48 @@ task :setup do
 end
 
 
+desc "Extract tidy category counts from every spreadsheet"
+task :tidy_counts => [:setup] do
+  (MIN_YEAR..MAX_YEAR).each do |yr_recorded|
+    AREAS.each_pair do |area, akey|
+        TOPICS.each_pair do |topic, tkey|
+             xlspattern = DIRS['fetched'] / "Crime#{yr_recorded}EXCEL" / "#{akey}#{tkey}*.xls*"
+             xlsglobs = Pathname.glob(xlspattern, File::FNM_CASEFOLD)
+             if xlsglobs.count == 0
+                STDERR.puts "Rake warning: Could not find any files for pattern: #{xlspattern}"
+             elsif xlsglobs.count > 1
+                raise "Unexpected glob: #{xlspattern} : \n #{xlsglobs}"
+             else
+               xlsname = xlsglobs[0]
+               destname = DIRS['tidied'] / "#{yr_recorded}-#{area}-#{topic}.csv"
+               sh %Q{python \
+                    #{SCRIPTS / 'extract_counts.py'} \
+                    #{xlsname} \
+                    --area #{area} \
+                    --topic #{topic} \
+                    --year-recorded #{yr_recorded} \
+                    > #{destname}}
 
-desc "Compile everything"
-task :compile  => [:setup] do
-  C_FILES.each_value{|fn| Rake::Task[fn].execute() }
+             end
+        end
+    end
+  end
 end
 
-desc "publish everything"
-task :publish  => [:setup] do
-  P_FILES.each_value{|fn| Rake::Task[fn].execute() }
+
+
+
+# desc "Compile everything"
+# task :compile  => [:setup] do
+#   C_FILES.each_value{|fn| Rake::Task[fn].execute() }
+#   (?<=Crime)\d{4}(?=EXCEL)
+# end
+
+# desc "publish everything"
+# task :publish  => [:setup] do
+#   P_FILES.each_value{|fn| Rake::Task[fn].execute() }
+# end
+
+
+namespace :files do
 end
-
-
-namespace :files
