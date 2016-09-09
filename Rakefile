@@ -9,9 +9,21 @@ DIRS = {
 }
 
 
-F_FILES = {
-  'something' => DIRS['fetched'] / 'something.csv'
+AREAS = {
+  'off_campus' => 'noncampus',
+  'on_campus' => 'oncampus',
+  'public_property' => 'publicproperty',
+  'residence_hall' => 'residencehall',
 }
+
+CATEGORIES = {
+  'arrests' => 'arrest',
+  'crimes' => 'crime',
+  'disciplinary_actions' => 'discipline',
+  'hate_crimes' => 'hate',
+}
+
+
 
 
 desc 'Setup the directories'
@@ -25,19 +37,16 @@ task :setup do
 end
 
 
-namespace :publish do
-  desc "Fetch everything"
-  task :fetch  => [:setup] do
-    F_FILES.each_value{|fn| Rake::Task[fn].execute() }
-  end
 
-  desc "Compile everything"
-  task :compile  => [:setup] do
-    C_FILES.each_value{|fn| Rake::Task[fn].execute() }
-  end
-
-  desc "publish everything"
-  task :publish  => [:setup] do
-    P_FILES.each_value{|fn| Rake::Task[fn].execute() }
-  end
+desc "Compile everything"
+task :compile  => [:setup] do
+  C_FILES.each_value{|fn| Rake::Task[fn].execute() }
 end
+
+desc "publish everything"
+task :publish  => [:setup] do
+  P_FILES.each_value{|fn| Rake::Task[fn].execute() }
+end
+
+
+namespace :files
