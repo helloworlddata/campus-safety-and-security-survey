@@ -1,0 +1,25 @@
+arrests:
+  DRUG: drug
+  LIQUOR: liquor
+  WEAPON: weapon
+
+disciplinary_actions:
+  DRUG: drug
+  LIQUOR: liquor
+  WEAPON: weapon
+
+crimes:
+  AGG_A: aggravated_assault
+  ARSON: arson
+  BURGLA: burglary
+  FORCIB: forcible_sex_offense
+  MURD: murder
+  NEG_M: negligent_manslaughter
+  NONFOR: nonforcible_sex_offense
+  ROBBE: robbery
+  VEHIC: motor_vehicle_theft
+  INCES: incest
+  RAPE: rape
+  STATR: statutory_rape
+  FONDL: fondling
+
